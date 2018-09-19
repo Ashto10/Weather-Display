@@ -1,0 +1,164 @@
+body
+    margin: 0
+    overflow-x: hidden
+    font-family: 'Open Sans', sans-serif
+    font-size: 0.9em
+    cursor: default
+
+.loading-screen
+    width: 100%
+    height: 100%
+    position: fixed
+    background: black
+    z-index: 100
+    display: flex
+    justify-content: center
+    align-items: center
+#loading-icon
+    display: block
+    width: 300px
+    height: 300px
+    border: 7px dashed whitesmoke
+    border-radius: 50%
+    position: absolute
+    animation: spin linear 5s infinite
+    
+@keyframes spin
+    from
+        transform: rotate(0deg)
+    to
+        transform: rotate(360deg)
+#loading-text
+    font-family: 'Droid Sans Mono', monospace
+    font-size: 2em
+    text-align: center
+    color: whitesmoke
+    text-transform: uppercase
+    
+$sunSize: 500px
+.sky
+    width: 100%
+    height: 45vh
+    overflow: hidden
+    position: relative
+    z-index: -10
+    padding-top: 10%
+.sun-container
+    position: relative
+    height: inherit
+    width: inherit
+    left: 50%
+.sun-center
+    position: relative
+    left: 0%
+    top: 0%
+.sun
+    display: block
+    width: $sunSize
+    height: $sunSize
+    border-radius: 100%
+    position: absolute
+    top: $sunSize / -2
+    left: $sunSize / -2
+.ground-curve
+    postion: relative
+    height: 50px
+    width: 100%
+    margin-top: -50px
+    border-radius: 50%/50px 100% 0 0
+    z-index: -10    
+
+$signBorderColor: #5e605e
+.weather-container
+    display: block
+    width: 60%
+    height: auto
+    max-width: 500px
+    background: #191c19
+    color: white
+    margin: -35vh auto 0
+    padding: 1em 1.5em
+    border: 7px solid $signBorderColor
+    border-radius: 20px
+    p
+        margin: 0
+#toggle-units
+    border: 1px solid white
+    padding: 10px
+    color: white
+    cursor: pointer
+    background: #444
+    float: right
+    border-radius: 10px
+    &:hover
+        background: #777
+    &:active
+        background: #222
+        border-color: #777
+        color: #777
+#location
+    font-size: 2em
+#description
+    text-transform: capitalize
+#sun-time
+    padding-top: 1em
+    text-align: center
+    clear: both
+        
+=InfoBlock($direction)
+    display: block
+    font-family: 'Droid Sans Mono', monospace
+    float: $direction
+    margin: 1em 2em
+.left-info
+    +InfoBlock(left)
+    width: 50%
+    min-width: 100px
+    max-width: 200px
+#icon
+    height: 100px
+    width: 100px
+    float: left
+#current-temperature
+    float: left
+    line-height: 90px
+    font-size: 2em
+    margin-left: 0.25em
+        
+.right-info
+    +InfoBlock(right)
+    p
+        margin-top: 0.2em
+.wind-direction-container
+    position: relative
+#wind-direction
+    display: inline-block
+    position: absolute
+    top: -.55em
+    left: .25em
+    width: 1em    
+    height: 1em
+    font-size: 2em
+        
+.sign-stand
+    height: 6vw
+    width: 40%
+    min-width: 200px
+    max-width: 400px
+    margin: 0 auto
+    border-left: 20px solid $signBorderColor
+    border-right: 20px solid $signBorderColor
+    
+#shadow-container
+    position: relative
+    opacity: 0.3
+.sign-stand-shadow
+    @extend .sign-stand
+    border-color: #333
+    height: 3vw
+.weather-container-shadow
+    @extend .weather-container
+    margin: 0 auto
+    height: 50px
+    background: radial-gradient(farthest-corner, #000, #333)
+    border: none
