@@ -4,10 +4,20 @@ html, body
 #sky
   background: skyblue
   width: 100%
-  height: 60vh
+  height: 70vh
   
 #ground
-  margin-top: -10vh
+  border-radius: 100% 100% 0 0
+  margin-top: -25vh
   background: green
   width: 100%
-  height: 50vh
+  height: 40vh
+  position: relative
+  &::after
+    bottom: -15vh
+    position: absolute
+    content: ''
+    display: block
+    height: 15vh
+    width: 100%
+    background: inherit
