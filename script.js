@@ -17,6 +17,10 @@ function numToPerc(num, max, min = 0) {
   return ((num - min) * 100) / (max - min);
 }
 
+function percToNum(num, min, max){
+  return min + (num / 100) * (max-min);
+}
+
 
 /// <summary> Get the user's location, and get weather if found. </summary>
 function GetWeather() {
@@ -110,58 +114,58 @@ function UpdateUnits() {
 }
 
 function UpdateScene(currentTime, sunrise, sunset) {
-  // If current time is less than sunrise, that means the API is providing tomorrow's information.
-  // Therefore, increase currentTime by one day.
+  let percOfDay = numToPerc(currentTime, sunset, sunrise);
   if (currentTime < sunrise) {
-    currentTime += 8640;
+    percOfDay += 100;
   }
+  let angle = percToNum(percOfDay, 180,360);
 
-  let angle = numToPerc(currentTime, sunrise, sunset)
+  let sky = document.getElementById('sky');
 
-
-  let sky = document.getElementById('sky');  
-  
   let skyHalfWidth = sky.offsetWidth / 2;
   let skyHeight = sky.offsetHeight;
   let xPos = skyHalfWidth * Math.cos(angle * Math.PI / 180) + skyHalfWidth;
   let yPos = (skyHeight * 0.8) * Math.sin(angle * Math.PI / 180) + (skyHeight);
-  sky.style.backgroundImage = `radial-gradient(circle farthest-corner at ${xPos}px ${yPos}px, ${getSunColor(angle)})`;
+  sky.style.backgroundImage = `radial-gradient(circle farthest-corner at ${xPos}px ${yPos}px, ${getSunColor(percOfDay)})`;
 
-  document.getElementById('ground').style.backgroundColor = getGroundColor(angle);
+  document.getElementById('ground').style.backgroundColor = getGroundColor(percOfDay);
 }
 
 function getGroundColor(angle) {
-  angle = Math.abs(angle-90);
+  angle = Math.abs(angle - 50);
 
-  let hue = 130 - (clamp(numToPerc(angle, 130, 70), 0, 100) / 4);
-  let sat = clamp(numToPerc(angle, 130, 70), 35, 60); 
-  let val = clamp(numToPerc(angle, 130, 60), 20, 51); 
+  let hue = mixColor(130, 100, angle, 40, 55);
+  let sat = mixColor(60, 35, angle, 40, 55);
+  let val = mixColor(51, 20, angle, 38, 55);
 
   return `hsl(${hue}, ${sat}%, ${val}%)`
 }
 
+function mixColor(startColor, endColor, currentAngle, startAngle, endAngle) {
+  let perc = clamp(numToPerc(currentAngle, endAngle, startAngle),0,100);
+  return percToNum(perc, startColor, endColor);
+}
 
 function getSunColor(angle) {
-  angle = Math.abs(angle-90);
+  angle = Math.abs(angle - 50);
 
-  let sunColor, skyStart;  
-  let skyHue = 238 - (clamp(numToPerc(angle, 115, 30), 0, 100) / 2);
-  let skySat = clamp(numToPerc(angle, 180), 20, 50); 
-  let skyVal = clamp(numToPerc(angle, 150, 25), 5, 70);  
+  let sunColor, skyStart = '40px';  
+  let skyHue = mixColor(184, 223, angle, 40, 55);
+  let skySat = mixColor(90, 20, angle, 40, 55);
+  let skyVal = mixColor(73, 30, angle, 38,55);
 
   let skyColor = `hsl(${skyHue},${skySat}%,${skyVal}%)`;
 
-  if (angle < 60) {
-    return skyColor;
-  } else if (angle < 95) {
+  if (angle > 80) {
+    sunColor = skyColor;
+  } else if (angle > 50) {
     sunColor = `white, yellow 10px, orange 7%, red 13%`;
     skyStart = '25%';
-  } else if (angle < 110) {
+  } else if (angle > 40) {
     sunColor = `white, yellow 25px, orange 7%`;
     skyStart = '15%';
   } else {
     sunColor = 'white, yellow 25px';
-    skyStart = '40px';  
   }
 
   return `${sunColor}, ${skyColor} ${skyStart}`;
@@ -172,8 +176,6 @@ $("#toggle-units").click(function(){
   inMetric = !inMetric;
   UpdateUnits();
 });
-
-let TIME = new Date().getDate();
 
 // Fetch weather data when page fully loads
 $(document).ready(function(){
