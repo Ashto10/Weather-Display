@@ -1,7 +1,10 @@
 (function() {
   'use strict';
 
-  // Array used to display the current date
+  /** Object used to store weather data. Useful for maintaining the state of a conversion, and for recalling updateScenery() whenever the page is resized or scrolled */
+  const weatherData = {}
+
+  /** Array used to display the current date. */
   let weekday = ["Sunday",
                  "Monday",
                  "Tuesday",
@@ -10,18 +13,40 @@
                  "Friday",
                  "Saturday"];
 
+  /**
+  * Clamps a number between two specified points.
+  * @param {Number} num - The number to compare
+  * @param {Number} min - Lower limit.
+  * @param {Number} max - Upper limit.
+  * @returns {Number}
+  */
   function clamp(num, min, max) {
     return Math.max(Math.min(num, max), min);
   }
 
+  /**
+  * Converts a number's position along a range into a percentage.
+  * @param {Number} num - The number to compare.
+  * @param {Number} max - Upper limit.
+  * @param {Number} min - Lower limit, defaults to 0.
+  * @returns {Number}
+  */
   function numToPerc(num, max, min = 0) {
     return ((num - min) * 100) / (max - min);
   }
 
+  /**
+  * Converts a percentage within a range into a number.
+  * @param {Number} num - The number to compare.
+  * @param {Number} min - Lower limit.
+  * @param {Number} max - Upper limit.
+  * @returns {Number}
+  */
   function percToNum(num, min, max){
     return min + (num / 100) * (max-min);
   }
 
+  /** Get GPS information from browser, then fetch weather info. */
   function getLocationGPS() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(pos => {
@@ -32,6 +57,7 @@
     }
   }
 
+  /** If browser GPS unavailable, get from API, then fetch weather info. */
   function getLocationAPI() {
     fetch("http://ip-api.com/json").then(data => {
       return data.json();
@@ -42,10 +68,16 @@
     })
   }
 
+  /**
+  * Get weather information from OpenWeatherMap API
+  * @param {Number} - user's latitude.
+  * @param {Number} - user's longitude.
+  */
   function getWeather(lat, lon) {
     if (lat === null) {
       //TODO: Error management
     }
+    // Temp appID
     let appID = "&APPID=f309b05a1b54b9419370a8a2a1ca9f36";
     let openWeatherURL = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&unit=metric${appID}`;
 
@@ -56,27 +88,31 @@
     })
   }
 
+  /**
+  * TODO: Parse weather data object, and pass information to equivalent DOM elements
+  * @param {Object} data - Weather data object from OpenWeatherMap API.
+  */
   function displayInformation(data) {
-    let currentTime = data.dt,
-        sunrise = data.sys.sunrise,
-        sunset = data.sys.sunset,
-        description = data.weather[0].description,
-        icon = `http://openweathermap.org/img/w/${data.weather[0].icon}.png`,
-        humidity = data.main.humidity,
-        windDirection = data.wind.deg,
-        currentTemp = data.main.temp,
-        minTemp = data.main.temp_min,
-        maxTemp = data.main.temp_max,
-        windSpeed = data.wind.speed;
+    weatherData['currentTime'] = data.dt;
+    weatherData['sunrise'] = data.sys.sunrise;
+    weatherData['sunset'] = data.sys.sunset;
+    weatherData['description'] = data.weather[0].description;
+    weatherData['icon'] = `http://openweathermap.org/img/w/${data.weather[0].icon}.png`;
+    weatherData['humidity'] = data.main.humidity;
+    weatherData['windDirection'] = data.wind.deg;
+    weatherData['currentTemp'] = data.main.temp;
+    weatherData['minTemp'] = data.main.temp_min;
+    weatherData['maxTemp'] = data.main.temp_max;
+    weatherData['windSpeed'] = data.wind.speed;
 
-    UpdateScene(currentTime, sunrise, sunset);
+    UpdateScene();
   }
 
-  function UpdateScene(currentTime, sunrise, sunset) {
-    let percOfDay = numToPerc(currentTime, sunset, sunrise);
-    if (currentTime < sunrise) {
-      percOfDay += 100;
-    }
+  /**
+  * Calculate the position and coloring of the scenery, based on screen size and current time relevant to sunrise/sunset
+  */
+  function UpdateScene() {
+    let percOfDay = numToPerc(weatherData.currentTime, weatherData.sunset, weatherData.sunrise);
     let angle = percToNum(percOfDay, 180,360);
 
     let sky = document.getElementById('sky');
@@ -90,11 +126,23 @@
     document.getElementById('ground').style.backgroundColor = getGroundColor(percOfDay);
   }
 
-  function mixColor(startColor, endColor, currentAngle, startAngle, endAngle) {
-    let perc = clamp(numToPerc(currentAngle, endAngle, startAngle),0,100);
-    return percToNum(perc, startColor, endColor);
+  /**
+  * Helper function used to transition from one value to another, based on the position of a number within a range.
+  * @param {Integer} start - the starting value.
+  * @param {Integer} end - the desired value to end on.
+  * @param {Integer} angle - current angle.
+  * @param {Integer} startAngle - the angle at which output would equal start.
+  * @param {Integer} endAngle - the angle at which output would equal end.
+  */
+  function mixColor(start, end, angle, startAngle, endAngle) {
+    let perc = clamp(numToPerc(angle, endAngle, startAngle),0,100);
+    return percToNum(perc, start, end);
   }
 
+  /**
+  * Helper function used to determine what color the ground should be depending on the hour of day.
+  * @param {Number} angle - The position of the sun in the sky, where 0 is midnight, and 100 is noon.
+  */
   function getGroundColor(angle) {
     angle = Math.abs(angle - 50);
 
@@ -105,6 +153,10 @@
     return `hsl(${hue}, ${sat}%, ${val}%)`
   }
 
+  /**
+  * Helper function used to determine what color the sun should be depending on the hour of day.
+  * @param {Number} angle - The position of the sun in the sky, where 0 is midnight, and 100 is noon.
+  */
   function getSunColor(angle) {
     angle = Math.abs(angle - 50);
 
@@ -133,5 +185,9 @@
   // Fetch weather data when page fully loads
   window.addEventListener('DOMContentLoaded', () => {
     getLocationGPS();
+  });
+
+  window.addEventListener('resize', () => {
+    UpdateScene();
   });
 })();

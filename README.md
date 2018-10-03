@@ -6,8 +6,7 @@ Weather display applet created as part of [a FreeCodeCamp challenge](https://lea
 
 ### Dependencies
 *Hard dependencies*
-1. [jQuery](https://jquery.com/)
-2. A SASS compiler
+1. A SASS compiler
 
 *Soft dependencies*
 1. [Normalize.css](https://github.com/necolas/normalize.css/)
