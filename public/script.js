@@ -77,11 +77,9 @@
     if (lat === null) {
       //TODO: Error management
     }
-    // Temp appID
-    let appID = "&APPID=f309b05a1b54b9419370a8a2a1ca9f36";
-    let openWeatherURL = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&unit=metric${appID}`;
 
-    fetch(openWeatherURL).then(data => {
+    let localAPI = window.location.href + `/current?lat=${lat}&lon=${lon}`;
+    fetch(localAPI).then(data => {
       return data.json();
     }).then(displayInformation).catch(err => {
       //TODO: Error management

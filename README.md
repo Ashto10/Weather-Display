@@ -2,7 +2,7 @@
 
 Weather display applet created as part of [a FreeCodeCamp challenge](https://learn.freecodecamp.org/coding-interview-prep/take-home-projects/show-the-local-weather/).
 
-[A running version of this code can be found on Codepen](https://codepen.io/Ashto/pen/JyabgK).
+[A running version of this code can be found on weather-display.glitch.me](https://weather-display.glitch.me/).
 
 ### Dependencies
 *Hard dependencies*
