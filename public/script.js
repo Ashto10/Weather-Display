@@ -2,7 +2,7 @@
   'use strict';
 
   /** Object used to store weather data. Useful for maintaining the state of a conversion, and for recalling updateScenery() whenever the page is resized or scrolled */
-  const weatherData = {}
+  let weatherData = {}
 
   /** Array used to display the current date. */
   let weekday = ["Sunday",
@@ -79,31 +79,12 @@
     }
 
     let localAPI = window.location.href + `/current?lat=${lat}&lon=${lon}`;
-    fetch(localAPI).then(data => {
-      return data.json();
-    }).then(displayInformation).catch(err => {
+    fetch(localAPI).then(data => data.json()).then(data => {
+      weatherData = {...data};
+      UpdateScene();
+    }).catch(err => {
       //TODO: Error management
     })
-  }
-
-  /**
-  * TODO: Parse weather data object, and pass information to equivalent DOM elements
-  * @param {Object} data - Weather data object from OpenWeatherMap API.
-  */
-  function displayInformation(data) {
-    weatherData['currentTime'] = data.dt;
-    weatherData['sunrise'] = data.sys.sunrise;
-    weatherData['sunset'] = data.sys.sunset;
-    weatherData['description'] = data.weather[0].description;
-    weatherData['icon'] = `http://openweathermap.org/img/w/${data.weather[0].icon}.png`;
-    weatherData['humidity'] = data.main.humidity;
-    weatherData['windDirection'] = data.wind.deg;
-    weatherData['currentTemp'] = data.main.temp;
-    weatherData['minTemp'] = data.main.temp_min;
-    weatherData['maxTemp'] = data.main.temp_max;
-    weatherData['windSpeed'] = data.wind.speed;
-
-    UpdateScene();
   }
 
   /**

@@ -1,10 +1,11 @@
 require('dotenv').config();
 
-var express = require('express');
-var path = require('path');
-var app = express();
+const express = require('express');
+const path = process.cwd();
+const app = express();
 
-var request = require('request');
+const ServerFunctions = require(path + '/ServerFunctions.js');
+const sf = new ServerFunctions();
 
 app.use(express.static('public'));
 
@@ -12,18 +13,6 @@ app.get('/', function(req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
 
-app.get('/current', (req, res) => {
-  let appID = process.env.APP_ID;
-  let openWeatherURL = `https://api.openweathermap.org/data/2.5/weather?lat=${req.query.lat}&lon=${req.query.lon}&unit=metric&APPID=${appID}`;
+app.get('/current', sf.getWeatherToday);
 
-  request(openWeatherURL, (err, response, body) => {
-    if (err) {
-      //TODO: Error management
-      res.json({err: err});
-    }
-    res.send(body);
-  });
-
-});
-
-var listener = app.listen(process.env.PORT);
+let listener = app.listen(process.env.PORT);
