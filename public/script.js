@@ -103,6 +103,8 @@
     sky.style.backgroundImage = `radial-gradient(circle farthest-corner at ${xPos}px ${yPos}px, ${getSunColor(percOfDay)})`;
 
     document.getElementById('ground').style.backgroundColor = getGroundColor(percOfDay);
+
+    drawShadow(angle);
   }
 
   /**
@@ -159,6 +161,44 @@
     }
 
     return `${sunColor}, ${skyColor} ${skyStart}`;
+  }
+
+  /**
+  * Update position and coloring of elements inside #shadow div
+  * @param {Number} angle - The position of the sun in the sky, where 0 is midnight, and 100 is noon.
+  */
+  function drawShadow(angle) {
+    let shadowElements = Array.from(document.getElementById('shadow').children);
+    let signLegs = Array.from(document.querySelectorAll('.sign-leg'));
+
+    if (angle < 180 || angle > 360) {
+      shadowElements.forEach(el => {
+        el.style.display = 'none';
+      });
+      signLegs.forEach(el => {
+        el.style.background = 'gray';
+      });
+      return;
+    }
+
+    angle = (angle - 270) * -1;
+
+    shadowElements.forEach(el => {
+      el.style.display = 'block';
+      el.style.transform = `skewX(${angle}deg)`;
+    });
+
+    let legGradient;
+
+    if (angle >= 0) {
+      legGradient = `linear-gradient(90deg, darkgray, gray ${Math.abs(angle)}%)`;
+    } else {
+      legGradient = `linear-gradient(90deg, gray ${90 - Math.abs(angle)}%, darkgray)`;
+    }
+
+    signLegs.forEach(leg => {
+      leg.style.backgroundImage = legGradient;
+    });
   }
 
   // Fetch weather data when page fully loads

@@ -13,6 +13,6 @@ app.get('/', function(req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
 
-app.get('/current', sf.getWeatherToday);
+app.get('/current', sf.getPlaceholderData);
 
 let listener = app.listen(process.env.PORT);

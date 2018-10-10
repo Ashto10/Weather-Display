@@ -1,41 +1,21 @@
+/* Constants */
 body
   margin: 0
   overflow-x: hidden
   font-family: 'Open Sans', sans-serif
   font-size: 0.9em
   cursor: default
-
-.loading-screen
+  overflow: hidden
+  
+=PseudoBox()
+  content: ''
   width: 100%
   height: 100%
-  position: fixed
-  background: black
-  z-index: 100
-  display: flex
-  justify-content: center
-  align-items: center
-#loading-icon
   display: block
-  width: 300px
-  height: 300px
-  border: 7px dashed whitesmoke
-  border-radius: 50%
-  position: absolute
-  animation: spin linear 5s infinite
-
-@keyframes spin
-  from
-    transform: rotate(0deg)
-  to
-    transform: rotate(360deg)
-#loading-text
-  font-family: 'Droid Sans Mono', monospace
-  font-size: 2em
-  text-align: center
-  color: whitesmoke
-  text-transform: uppercase
 
 $sunSize: 500px
+
+/* Scenery */
 #sky
   background: skyblue
   width: 100%
@@ -48,3 +28,64 @@ $sunSize: 500px
   width: 100%
   height: 40vh
   position: relative
+  &::before
+    +PseudoBox()
+    border-radius: 10% 10% 0 0
+    background: url('img/seamless-grass-texture.jpg')
+    background-size: 50% 50%
+    opacity: 0.4
+  
+/* Sign */
+$sign-radius: 20px
+$sign-leg-height: 30%
+
+#sign-container, #shadow
+  position: absolute
+  transform: translateX(-50%)
+  left: 50%
+  top: -80%
+  width: 70%
+  height: 100%
+  
+.sign
+  border-radius: $sign-radius
+  box-sizing: border-box
+  border: 6px double gray
+  overflow: hidden
+  width: 100%
+  height: 100%
+  background: lightgray
+  &::after
+    +PseudoBox()
+    background: green
+  
+%sign-leg
+  width: 7%
+  height: $sign-leg-height
+  background: gray
+  position: absolute
+  top: 100%
+
+.left-leg
+  @extend %sign-leg
+  left: $sign-radius * 1.75
+  
+.right-leg
+  right: $sign-radius * 1.75
+  @extend %sign-leg
+  
+/* Shadow */
+#shadow
+  transform: rotate(180deg)
+  top: 80%
+  left: 15%
+  *
+    transform: skew(-80deg)
+    background: rgba(50,50,50,0.5)
+    border: none
+  %sign-leg
+    transform-origin: 100% 100%
+  .sign
+    transform-origin: 100% (100% + $sign-leg-height)
+    &::after
+      display: none

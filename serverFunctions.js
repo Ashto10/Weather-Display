@@ -28,6 +28,21 @@ function ServerFunctions() {
       });    
     });
   }
+  this.getPlaceholderData = (req, res) => {
+    res.json({
+      currentTemp: 297.5,
+      currentTime: 1539082903,
+      description: "clear sky",
+      humidity: 78,
+      icon: "http://openweathermap.org/img/w/01d.png",
+      maxTemp: 298.75,
+      minTemp: 295.95,
+      sunrise: 1539082903,
+      sunset: 1539123806,
+      windDirection: 187.002,
+      windSpeed: 2.59
+    })
+  }
 };
 
 module.exports = ServerFunctions
