@@ -2,8 +2,7 @@
 body
   margin: 0
   overflow-x: hidden
-  font-family: 'Open Sans', sans-serif
-  font-size: 0.9em
+  font-family: 'Mukta', sans-serif
   cursor: default
   overflow: hidden
   
@@ -36,6 +35,7 @@ $sunSize: 500px
     opacity: 0.4
   
 /* Sign */
+$sign-height: 270px
 $sign-radius: 20px
 $sign-leg-height: 30%
 
@@ -43,9 +43,12 @@ $sign-leg-height: 30%
   position: absolute
   transform: translateX(-50%)
   left: 50%
-  top: -80%
   width: 70%
-  height: 100%
+  height: $sign-height
+  max-width: 700px
+  
+#sign-container
+  top: $sign-height * -.75
   
 .sign
   border-radius: $sign-radius
@@ -55,12 +58,14 @@ $sign-leg-height: 30%
   width: 100%
   height: 100%
   background: lightgray
+  position: relative
   &::after
     +PseudoBox()
-    background: green
+    background: #009e44
   
 %sign-leg
   width: 7%
+  max-width: 50px
   height: $sign-leg-height
   background: gray
   position: absolute
@@ -73,12 +78,55 @@ $sign-leg-height: 30%
 .right-leg
   right: $sign-radius * 1.75
   @extend %sign-leg
+
+/* Sign Contents */
+#sign-contents
+  position: absolute
+  margin: 2% 4%
+  width: 92%
+  height: 92%
+  color: white
+  h1, p
+    margin: 0
+    
+#main-info-right
+  position: absolute
+  top: 0
+  right: 0
+  #icon
+    width: 75px
+    height: 75px
+  #wind
+    position: relative
+  #wind-speed
+    position: relative
+    right: 32px
+  #wind-direction
+    width: 32px
+    height: 32px
+    position: absolute
+    top: -6px
+    right: 6px
+    font-size: 2em
+    
+#additional-info
+  margin-top: 1em
+  padding-top: 0.5em
+  border-top: 3px solid lightgray
+  display: flex
+  justify-content: space-around
+  text-align: center
+  
+#sun-event
+  position: absolute
+  bottom: 0
+  left: 50%
+  transform: translateX(-50%)
   
 /* Shadow */
 #shadow
-  transform: rotate(180deg)
-  top: 80%
-  left: 15%
+  transform: translateX(-50%) rotate(180deg)
+  top: $sign-height * .85
   *
     transform: skew(-80deg)
     background: rgba(50,50,50,0.5)

@@ -2,16 +2,13 @@
   'use strict';
 
   /** Object used to store weather data. Useful for maintaining the state of a conversion, and for recalling updateScenery() whenever the page is resized or scrolled */
-  let weatherData = {}
+  let weatherData = {};
 
-  /** Array used to display the current date. */
-  let weekday = ["Sunday",
-                 "Monday",
-                 "Tuesday",
-                 "Wednesday",
-                 "Thursday",
-                 "Friday",
-                 "Saturday"];
+  const $ = {
+    elByID: (el) => {
+      return document.getElementById(el);
+    }
+  };
 
   /**
   * Clamps a number between two specified points.
@@ -65,7 +62,7 @@
       getWeather(data.lat, data.lon);
     }).catch(err => {
       //TODO: Error management
-    })
+    });
   }
 
   /**
@@ -80,11 +77,46 @@
 
     let localAPI = window.location.href + `/current?lat=${lat}&lon=${lon}`;
     fetch(localAPI).then(data => data.json()).then(data => {
-      weatherData = {...data};
+      weatherData = data;
       UpdateScene();
+      UpdateWeatherDisplay();
     }).catch(err => {
       //TODO: Error management
-    })
+    });
+  }
+
+  /**
+  * Pull data from weatherData object, and plug it into
+  */
+  function UpdateWeatherDisplay() {    
+    let currentTemp = weatherData.currentTemp + '&deg;F',
+        minTemp = weatherData.minTemp + '&deg;F',
+        maxTemp = weatherData.maxTemp + '&deg;F';
+
+    $.elByID('city').innerHTML = weatherData.city;
+    $.elByID('currentTime').innerHTML = new Date().toLocaleString('en-US', { weekday: 'long', hour: '2-digit', minute: '2-digit' });
+    $.elByID('description').innerHTML = weatherData.description;
+
+    $.elByID('icon').setAttribute('src', weatherData.icon);
+    $.elByID('wind-speed').innerHTML = weatherData.windSpeed + 'MPH';
+    $.elByID('wind-direction').style.transform = `rotateZ(${weatherData.windDirection}deg)`;
+    $.elByID('currentTemp').innerHTML = currentTemp;
+
+    $.elByID('minTemp').innerHTML = minTemp;
+    $.elByID('maxTemp').innerHTML = maxTemp;
+    $.elByID('humidity').innerHTML = weatherData.humidity + '%';
+
+    let eventText, eventTime;
+    if (weatherData.currentTime < weatherData.sunrise) {
+      eventText = 'rise';
+      eventTime = new Date(weatherData.sunrise * 1000).toLocaleTimeString();
+    } else {
+      eventText = 'set';
+      eventTime = new Date(weatherData.sunrise * 1000).toLocaleTimeString();
+    }
+
+    $.elByID('sun-event').innerHTML = `Sun will ${eventText} at ${eventTime}`;
+
   }
 
   /**
@@ -94,7 +126,7 @@
     let percOfDay = numToPerc(weatherData.currentTime, weatherData.sunset, weatherData.sunrise);
     let angle = percToNum(percOfDay, 180,360);
 
-    let sky = document.getElementById('sky');
+    let sky = $.elByID('sky');
 
     let skyHalfWidth = sky.offsetWidth / 2;
     let skyHeight = sky.offsetHeight;
@@ -102,7 +134,7 @@
     let yPos = (skyHeight * 0.8) * Math.sin(angle * Math.PI / 180) + (skyHeight);
     sky.style.backgroundImage = `radial-gradient(circle farthest-corner at ${xPos}px ${yPos}px, ${getSunColor(percOfDay)})`;
 
-    document.getElementById('ground').style.backgroundColor = getGroundColor(percOfDay);
+    $.elByID('ground').style.backgroundColor = getGroundColor(percOfDay);
 
     drawShadow(angle);
   }
@@ -131,7 +163,7 @@
     let sat = mixColor(60, 35, angle, 40, 55);
     let val = mixColor(51, 20, angle, 38, 55);
 
-    return `hsl(${hue}, ${sat}%, ${val}%)`
+    return `hsl(${hue}, ${sat}%, ${val}%)`;
   }
 
   /**
@@ -168,7 +200,7 @@
   * @param {Number} angle - The position of the sun in the sky, where 0 is midnight, and 100 is noon.
   */
   function drawShadow(angle) {
-    let shadowElements = Array.from(document.getElementById('shadow').children);
+    let shadowElements = Array.from($.elByID('shadow').children);
     let signLegs = Array.from(document.querySelectorAll('.sign-leg'));
 
     if (angle < 180 || angle > 360) {
@@ -176,7 +208,7 @@
         el.style.display = 'none';
       });
       signLegs.forEach(el => {
-        el.style.background = 'gray';
+        el.style.background = 'darkgray';
       });
       return;
     }

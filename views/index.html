@@ -1,14 +1,49 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-    <link href="https://fonts.googleapis.com/css?family=Droid+Sans+Mono|Open+Sans" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Mukta" rel="stylesheet"> 
     <link href="styles.css" rel="stylesheet" type="text/css">
   </head>
   <body>
     <div id="sky"></div>
     <div id="ground">
       <div id="sign-container">
-        <div class="sign"></div>
+        <div class="sign">
+          <div id="sign-contents">
+            <div id="main-info">
+              <div id="main-info-left">
+                <h1 id="city"></h1>
+                <p id="currentTime"></p>
+                <p>
+                  <span id="currentTemp"></span>, 
+                  <span id="description"></span>
+                </p>
+              </div>
+              <div id="main-info-right">
+                <img id="icon" src="http://openweathermap.org/img/w/02d.png">
+                <p id="wind">
+                  <span id="wind-speed"></span>
+                  <img id="wind-direction" src="/img/arrow.png">
+                </p>
+              </div>
+            </div>
+            <div id="additional-info">
+              <div class="info-box">
+                <p>High</p>
+                <p id="maxTemp"></p>
+              </div>
+              <div class="info-box">
+                <p>Low</p>
+                <p id="minTemp"></p>
+              </div>
+              <div class="info-box">
+                <p>Humidity</p>
+                <p id="humidity"></p>
+              </div>
+            </div>
+            <div id="sun-event"></div>
+          </div>
+        </div>
         <div class="left-leg sign-leg"></div>
         <div class="right-leg sign-leg"></div>
       </div>
