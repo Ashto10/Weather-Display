@@ -1,7 +1,11 @@
 (function() {
   'use strict';
 
-  /** Object used to store weather data. Useful for maintaining the state of a conversion, and for recalling updateScenery() whenever the page is resized or scrolled */
+  /**
+  * Object used to store weather data. Useful for maintaining the
+  * state of a conversion, and for recalling updateSky() whenever
+  * the page is resized or scrolled.
+  */
   let weatherData = {};
 
   const $ = {
@@ -78,34 +82,61 @@
     let localAPI = window.location.href + `/current?lat=${lat}&lon=${lon}`;
     fetch(localAPI).then(data => data.json()).then(data => {
       weatherData = data;
-      UpdateScene();
+      UpdateSky();
+      UpdateTime();
       UpdateWeatherDisplay();
+      Tick();
     }).catch(err => {
       //TODO: Error management
     });
   }
 
   /**
+  * Helper function used to round and label temperature.
+  * @param {Float} temp - temperature in farenheit.
+  */
+  function getF (temp) {
+    return Math.round(temp * 10) / 10 + '&deg;F';
+  }
+
+  /**
+  * Helper function used to round and label speed.
+  * @param {Float} speed - speed in MPH.
+  */
+  function getMPH (speed) {
+    return Math.round(speed * 10) / 10 + ' MPH';
+  }
+
+  /**
+  * Converts farenheit to celsius, then rounds to tenths place, and labels the result.
+  * @param {String/Float} temp - temperature in farenheit.
+  */
+  function FtoC (temp) {
+    temp = (parseFloat(temp) - 32) * (5/9);
+    return Math.round(temp * 10) / 10 + '&deg;C';
+  }
+
+  /**
+  * Converts MPH to KPH, then rounds to tenths place, and labels the result.
+  * @param {String/Float} speed - speed in MPH.
+  */
+  function mphToKph (speed) {
+    return Math.round(parseFloat(speed) * 1.609 * 10) / 10 + ' KPH';
+  }
+
+  /**
   * Pull data from weatherData object, and plug it into
   */
   function UpdateWeatherDisplay() {    
-    let currentTemp = weatherData.currentTemp + '&deg;F',
-        minTemp = weatherData.minTemp + '&deg;F',
-        maxTemp = weatherData.maxTemp + '&deg;F';
-
     $.elByID('city').innerHTML = weatherData.city;
-    $.elByID('currentTime').innerHTML = new Date().toLocaleString('en-US', { weekday: 'long', hour: '2-digit', minute: '2-digit' });
     $.elByID('description').innerHTML = weatherData.description;
 
     $.elByID('icon').setAttribute('src', weatherData.icon);
-    $.elByID('wind-speed').innerHTML = weatherData.windSpeed + 'MPH';
     $.elByID('wind-direction').style.transform = `rotateZ(${weatherData.windDirection}deg)`;
-    $.elByID('currentTemp').innerHTML = currentTemp;
-
-    $.elByID('minTemp').innerHTML = minTemp;
-    $.elByID('maxTemp').innerHTML = maxTemp;
     $.elByID('humidity').innerHTML = weatherData.humidity + '%';
-
+    
+    UpdateUnits();
+    
     let eventText, eventTime;
     if (weatherData.currentTime < weatherData.sunrise) {
       eventText = 'rise';
@@ -116,13 +147,36 @@
     }
 
     $.elByID('sun-event').innerHTML = `Sun will ${eventText} at ${eventTime}`;
+  }
 
+  function UpdateUnits() {
+    let currentTemp = getF(weatherData.currentTemp),
+        minTemp = getF(weatherData.minTemp),
+        maxTemp = getF(weatherData.maxTemp),
+        windSpeed = getMPH(weatherData.windSpeed);
+
+    if (weatherData.inMetric) {
+      currentTemp = FtoC(currentTemp);
+      minTemp = FtoC(minTemp);
+      maxTemp = FtoC(maxTemp);
+      windSpeed = mphToKph(windSpeed);
+    }
+
+    $.elByID('currentTemp').innerHTML = currentTemp;
+    $.elByID('minTemp').innerHTML = minTemp;
+    $.elByID('maxTemp').innerHTML = maxTemp;
+    $.elByID('wind-speed').innerHTML = windSpeed
+  }
+
+  function UpdateTime() {
+    $.elByID('currentTime').innerHTML = new Date().toLocaleString('en-US', { weekday: 'long', hour: '2-digit', minute: '2-digit' });
   }
 
   /**
-  * Calculate the position and coloring of the scenery, based on screen size and current time relevant to sunrise/sunset
+  * Calculate the position and coloring of the scenery,
+  * based on screen size and current time relevant to sunrise/sunset
   */
-  function UpdateScene() {
+  function UpdateSky() {
     let percOfDay = numToPerc(weatherData.currentTime, weatherData.sunset, weatherData.sunrise);
     let angle = percToNum(percOfDay, 180,360);
 
@@ -232,6 +286,14 @@
       leg.style.backgroundImage = legGradient;
     });
   }
+  
+  function Tick() {
+    weatherData.currentTime = new Date().getTime() / 1000;
+    UpdateTime();
+    UpdateSky();
+    
+    setTimeout(Tick, 1000);
+  }
 
   // Fetch weather data when page fully loads
   window.addEventListener('DOMContentLoaded', () => {
@@ -239,6 +301,20 @@
   });
 
   window.addEventListener('resize', () => {
-    UpdateScene();
+    UpdateSky();
+  });
+
+  $.elByID('toggle-units').addEventListener('click', () => {
+    weatherData.inMetric = !weatherData.inMetric;
+    UpdateUnits();
+  })
+
+  $.elByID('sidebar-toggle').addEventListener('click', () => {
+    let sidebar = $.elByID('sidebar');
+    if (sidebar.classList.contains('open')) {
+      sidebar.classList.remove('open');
+    } else {
+      sidebar.classList.add('open');
+    }
   });
 })();

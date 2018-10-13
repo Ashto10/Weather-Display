@@ -5,12 +5,18 @@
     <link href="styles.css" rel="stylesheet" type="text/css">
   </head>
   <body>
+    <aside id="sidebar">
+      <button id="sidebar-toggle">&#9776;</button>
+      <button id="toggle-units">Toggle units</button>
+      <h1>Current Weather Display</h1>
+      <p>by <a href="https://www.gustavoguarino.com">Gustavo Guarino</a></p>
+    </aside>
     <div id="sky"></div>
     <div id="ground">
       <div id="sign-container">
         <div class="sign">
-          <div id="sign-contents">
-            <div id="main-info">
+          <main id="sign-contents">
+            <section id="main-info">
               <div id="main-info-left">
                 <h1 id="city"></h1>
                 <p id="currentTime"></p>
@@ -26,8 +32,8 @@
                   <img id="wind-direction" src="/img/arrow.png">
                 </p>
               </div>
-            </div>
-            <div id="additional-info">
+            </section>
+            <section id="additional-info">
               <div class="info-box">
                 <p>High</p>
                 <p id="maxTemp"></p>
@@ -40,9 +46,9 @@
                 <p>Humidity</p>
                 <p id="humidity"></p>
               </div>
-            </div>
-            <div id="sun-event"></div>
-          </div>
+            </section>
+            <section id="sun-event"></section>
+          </main>
         </div>
         <div class="left-leg sign-leg"></div>
         <div class="right-leg sign-leg"></div>

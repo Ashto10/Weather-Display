@@ -110,7 +110,7 @@ $sign-leg-height: 30%
     font-size: 2em
     
 #additional-info
-  margin-top: 1em
+  margin-top: 2em
   padding-top: 0.5em
   border-top: 3px solid lightgray
   display: flex
@@ -137,3 +137,28 @@ $sign-leg-height: 30%
     transform-origin: 100% (100% + $sign-leg-height)
     &::after
       display: none
+    
+/* Sidebar */
+#sidebar
+  font-size: 0.8em
+  box-sizing: border-box
+  border-left: 2px solid gray
+  border-bottom: 2px solid gray
+  position: fixed
+  width: 250px
+  background: whitesmoke
+  right: -250px
+  transition: right 0.2s linear
+  padding: 1em
+  &.open
+    right: 0
+#sidebar-toggle
+  width: 50px
+  height: 50px
+  position: absolute
+  left: -50px
+  top: 0
+  background: none
+  border: none
+  font-size: 30px
+  color: white
