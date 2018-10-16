@@ -7,8 +7,7 @@ function ServerFunctions() {
 
     request(openWeatherURL, (err, response, body) => {
       if (err) {
-        //TODO: Error management
-        res.json({err: err});
+        res.status(500).send('OpenWeatherMap API timeout!');
       }
 
       let data = JSON.parse(body);

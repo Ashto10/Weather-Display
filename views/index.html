@@ -16,7 +16,12 @@
       <div id="sign-container">
         <div class="sign">
           <main id="sign-contents">
-            <section id="main-info">
+            <section id="loading-screen">
+              <h1 id="loading-text">LOADING...</h1>
+              <small id="loading-error"></small>
+              <img id="loading-icon" src="http://openweathermap.org/img/w/02d.png">
+            </section>
+            <section class="weather-info" id="main-info">
               <div id="main-info-left">
                 <h1 id="city"></h1>
                 <p id="currentTime"></p>
@@ -26,14 +31,14 @@
                 </p>
               </div>
               <div id="main-info-right">
-                <img id="icon" src="http://openweathermap.org/img/w/02d.png">
+                <img id="icon">
                 <p id="wind">
                   <span id="wind-speed"></span>
                   <img id="wind-direction" src="/img/arrow.png">
                 </p>
               </div>
             </section>
-            <section id="additional-info">
+            <section class="weather-info" id="additional-info">
               <div class="info-box">
                 <p>High</p>
                 <p id="maxTemp"></p>
@@ -47,7 +52,7 @@
                 <p id="humidity"></p>
               </div>
             </section>
-            <section id="sun-event"></section>
+            <section class="weather-info" id="sun-event"></section>
           </main>
         </div>
         <div class="left-leg sign-leg"></div>

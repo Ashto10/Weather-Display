@@ -4,7 +4,7 @@ const express = require('express');
 const path = process.cwd();
 const app = express();
 
-const ServerFunctions = require(path + '/ServerFunctions.js');
+const ServerFunctions = require(path + '/serverFunctions.js');
 const sf = new ServerFunctions();
 
 app.use(express.static('public'));

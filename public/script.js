@@ -8,9 +8,34 @@
   */
   let weatherData = {};
 
+  /**
+  * Helper object that stores commonly used functions.
+  */
   const $ = {
     elByID: (el) => {
       return document.getElementById(el);
+    },
+    query: (search, callback) => {
+      let els = Array.from(document.querySelectorAll(search));
+      els.forEach(callback);
+    }, 
+    fetchWTimeout: (src, t, success, failure) => {
+      return new Promise((resolve, reject) => {
+        let timeout = setTimeout(() => {
+          return reject("Error: timeout");
+        }, t);
+        let didTimeout = false;
+        fetch(src)
+          .then(data => data.json())
+          .then(data => {
+          clearInterval(timeout);
+          didTimeout = true;
+          return resolve(data);
+        }).catch(err => {
+          if (didTimeout) return;
+          reject(err);
+        });
+      }).then(success).catch(failure);
     }
   };
 
@@ -47,6 +72,18 @@
     return min + (num / 100) * (max-min);
   }
 
+  /**
+  * Fills in specified elements with error information.
+  * @param {String} message - the error message to display.
+  */
+  function throwLoadingError(message) {
+    $.elByID('loading-icon').style.display = 'none';
+    $.elByID('loading-text').innerHTML = 'An error has occured. Please try again. ';
+    if (message) {
+      $.elByID('loading-error').innerHTML = message;
+    }
+  }
+
   /** Get GPS information from browser, then fetch weather info. */
   function getLocationGPS() {
     if (navigator.geolocation) {
@@ -59,13 +96,11 @@
   }
 
   /** If browser GPS unavailable, get from API, then fetch weather info. */
-  function getLocationAPI() {
-    fetch("http://ip-api.com/json").then(data => {
-      return data.json();
-    }).then(data => {
+  function getLocationAPI() {    
+    $.fetchWTimeout("https://cors-anywhere.herokuapp.com/http://ip-api.com/json", 5000, data => {
       getWeather(data.lat, data.lon);
-    }).catch(err => {
-      //TODO: Error management
+    }, err => {
+      throwLoadingError(err);
     });
   }
 
@@ -76,18 +111,28 @@
   */
   function getWeather(lat, lon) {
     if (lat === null) {
-      //TODO: Error management
+      return throwLoadingError();
     }
 
-    let localAPI = window.location.href + `/current?lat=${lat}&lon=${lon}`;
-    fetch(localAPI).then(data => data.json()).then(data => {
+    /** Temp location for testing purposes. */
+    let localAPI = window.location.href + `current?lat=${lat}&lon=${lon}`;
+
+    $.fetchWTimeout(localAPI, 5000, data => {
       weatherData = data;
+
       UpdateSky();
       UpdateTime();
       UpdateWeatherDisplay();
       Tick();
-    }).catch(err => {
-      //TODO: Error management
+
+      $.query('.weather-info', (el) => {
+        el.style.opacity = '1';
+      }, err => {
+        throwLoadingError(err);
+      });
+
+      $.elByID('loading-screen').style.display = 'none';
+
     });
   }
 
@@ -134,9 +179,9 @@
     $.elByID('icon').setAttribute('src', weatherData.icon);
     $.elByID('wind-direction').style.transform = `rotateZ(${weatherData.windDirection}deg)`;
     $.elByID('humidity').innerHTML = weatherData.humidity + '%';
-    
+
     UpdateUnits();
-    
+
     let eventText, eventTime;
     if (weatherData.currentTime < weatherData.sunrise) {
       eventText = 'rise';
@@ -149,6 +194,7 @@
     $.elByID('sun-event').innerHTML = `Sun will ${eventText} at ${eventTime}`;
   }
 
+  /** Toggle units of measurement used in display. */
   function UpdateUnits() {
     let currentTemp = getF(weatherData.currentTemp),
         minTemp = getF(weatherData.minTemp),
@@ -165,9 +211,10 @@
     $.elByID('currentTemp').innerHTML = currentTemp;
     $.elByID('minTemp').innerHTML = minTemp;
     $.elByID('maxTemp').innerHTML = maxTemp;
-    $.elByID('wind-speed').innerHTML = windSpeed
+    $.elByID('wind-speed').innerHTML = windSpeed;
   }
 
+  /** Update the current time. */
   function UpdateTime() {
     $.elByID('currentTime').innerHTML = new Date().toLocaleString('en-US', { weekday: 'long', hour: '2-digit', minute: '2-digit' });
   }
@@ -255,15 +302,16 @@
   */
   function drawShadow(angle) {
     let shadowElements = Array.from($.elByID('shadow').children);
-    let signLegs = Array.from(document.querySelectorAll('.sign-leg'));
 
     if (angle < 180 || angle > 360) {
       shadowElements.forEach(el => {
         el.style.display = 'none';
       });
-      signLegs.forEach(el => {
+
+      $.query('.sign-leg', el => {
         el.style.background = 'darkgray';
       });
+
       return;
     }
 
@@ -282,16 +330,17 @@
       legGradient = `linear-gradient(90deg, gray ${90 - Math.abs(angle)}%, darkgray)`;
     }
 
-    signLegs.forEach(leg => {
-      leg.style.backgroundImage = legGradient;
+    $.query('.sign-leg', el => {
+      el.style.backgroundImage = legGradient;
     });
   }
-  
+
+  /** Calls certain functions every second in order to update the visual display. */
   function Tick() {
     weatherData.currentTime = new Date().getTime() / 1000;
     UpdateTime();
     UpdateSky();
-    
+
     setTimeout(Tick, 1000);
   }
 
@@ -307,7 +356,7 @@
   $.elByID('toggle-units').addEventListener('click', () => {
     weatherData.inMetric = !weatherData.inMetric;
     UpdateUnits();
-  })
+  });
 
   $.elByID('sidebar-toggle').addEventListener('click', () => {
     let sidebar = $.elByID('sidebar');
