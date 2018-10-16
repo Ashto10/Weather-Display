@@ -3,6 +3,7 @@
   <head>
     <link href="https://fonts.googleapis.com/css?family=Mukta" rel="stylesheet"> 
     <link href="styles.css" rel="stylesheet" type="text/css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
     <aside id="sidebar">
@@ -22,21 +23,17 @@
               <img id="loading-icon" src="http://openweathermap.org/img/w/02d.png">
             </section>
             <section class="weather-info" id="main-info">
-              <div id="main-info-left">
-                <h1 id="city"></h1>
-                <p id="currentTime"></p>
-                <p>
-                  <span id="currentTemp"></span>, 
-                  <span id="description"></span>
-                </p>
-              </div>
-              <div id="main-info-right">
-                <img id="icon">
-                <p id="wind">
-                  <span id="wind-speed"></span>
-                  <img id="wind-direction" src="/img/arrow.png">
-                </p>
-              </div>
+              <h1 id="city"></h1>
+              <img id="icon">
+              <p id="currentTime"></p>
+              <p id="wind">
+                <span id="wind-speed"></span>
+                <img id="wind-direction" src="/img/arrow.png">
+              </p>
+              <p>
+                <span id="currentTemp"></span>, 
+                <span id="description"></span>
+              </p> 
             </section>
             <section class="weather-info" id="additional-info">
               <div class="info-box">

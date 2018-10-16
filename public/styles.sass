@@ -43,7 +43,7 @@ $sign-leg-height: 30%
   position: absolute
   transform: translateX(-50%)
   left: 50%
-  width: 70%
+  width: 75%
   height: $sign-height
   max-width: 700px
   
@@ -89,39 +89,42 @@ $sign-leg-height: 30%
   h1, p
     margin: 0
     
-#main-info-right
-  position: absolute
-  top: 0
-  right: 0
+#main-info
+  display: flex
+  flex-wrap: wrap
+  position: relative
+  justify-content: space-between
+  & > *
+    flex-basis: 50%
   #icon
     width: 75px
     height: 75px
+    flex-basis: 75px
   #wind
     position: relative
+    height: 1.75em
+    text-align: right
   #wind-speed
     position: relative
-    right: 32px
+    right: 2.5em
   #wind-direction
-    width: 32px
-    height: 32px
     position: absolute
-    top: -6px
-    right: 6px
-    font-size: 2em
+    display: inline-block
+    height: 100%
+    right: 0
     
 #additional-info
-  margin-top: 2em
   padding-top: 0.5em
+  margin-top: 0.5em
   border-top: 3px solid lightgray
   display: flex
   justify-content: space-around
   text-align: center
   
 #sun-event
-  position: absolute
-  bottom: 0
-  left: 50%
-  transform: translateX(-50%)
+  margin-top: 0.5em
+  width: 100%
+  text-align: center
   
 /* Shadow */
 #shadow
@@ -150,6 +153,7 @@ $sign-leg-height: 30%
   right: -250px
   transition: right 0.2s linear
   padding: 1em
+  z-index: 100
   &.open
     right: 0
 #sidebar-toggle
@@ -189,3 +193,39 @@ $sign-leg-height: 30%
   100%
     top: 60px
     width: 19%
+  
+/* Mobile */
+@media screen and (max-height: 500px)
+  .sign
+    background: rgba(10,10,10,0.25)
+    &::after
+      background: none
+    
+@media screen and (max-width: 500px)
+  $sign-height: $sign-height * 1.25
+  #sign-container, #shadow
+    left: 50%
+    width: 75%
+    height: $sign-height
+    max-width: 700px
+  
+  #sign-container
+    top: $sign-height * -.75
+    
+  #shadow
+    top: $sign-height * .85
+    
+  #main-info
+    justify-content: center
+    text-align: center
+    & > *
+      flex-basis: 100%
+    
+  #icon
+    order: -1
+    width: 100px
+    height: 100px
+    
+  #wind
+    order: 100
+    flex-basis: 100px
